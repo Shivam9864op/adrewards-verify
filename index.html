@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AdRewards Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #2C2F33;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #23272A;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+        h1 {
+            color: #7289DA;
+            margin-bottom: 20px;
+        }
+        .code {
+            font-size: 28px;
+            font-weight: bold;
+            background-color: #7289DA;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+        .instructions {
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #43B581;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #3ca374;
+        }
+        .copy-btn {
+            background-color: #4e545c;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background-color: #5d646c;
+        }
+        .copied {
+            font-size: 12px;
+            color: #43B581;
+            display: none;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #72767d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verification Successful!</h1>
+        
+        <div class="instructions">
+            Your verification code is:
+        </div>
+        
+        <div class="code" id="verification-code">LOADING...</div>
+        
+        <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+        <div class="copied" id="copied-message">Copied!</div>
+        
+        <div class="instructions">
+            <p>Type <strong>/redeem <span id="code-command">LOADING</span></strong> in Minecraft to claim your rewards!</p>
+            <p>Or use <strong>/redeem code:<span id="discord-command">LOADING</span></strong> in our Discord server.</p>
+        </div>
+        
+        <a href="https://discord.gg/yourserver" class="button" id="discord-link">Join Our Discord</a>
+        
+        <div class="footer">
+            Created by Shivam9864op • Last updated: 2025-07-12
+        </div>
+    </div>
+    
+    <script>
+        // Function to copy code to clipboard
+        function copyCode() {
+            const code = document.getElementById('verification-code').innerText;
+            navigator.clipboard.writeText(code).then(function() {
+                const copiedMsg = document.getElementById('copied-message');
+                copiedMsg.style.display = 'block';
+                setTimeout(() => {
+                    copiedMsg.style.display = 'none';
+                }, 2000);
+            });
+        }
+        
+        // Parse URL parameters
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const discord = urlParams.get('discord');
+            
+            if (code) {
+                document.getElementById('verification-code').innerText = code;
+                document.getElementById('code-command').innerText = code;
+                document.getElementById('discord-command').innerText = code;
+            }
+            
+            if (discord) {
+                document.getElementById('discord-link').href = discord;
+            }
+        };
+    </script>
+</body>
+</html>
