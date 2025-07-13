@@ -41,6 +41,29 @@
             letter-spacing: 3px;
             margin: 20px 0;
             display: inline-block;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .code-display:hover {
+            background-color: #35393e;
+        }
+        .code-display:active {
+            transform: scale(0.98);
+        }
+        .code-display::after {
+            content: "Click to Copy";
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #aaa;
+            opacity: 0.8;
+        }
+        .copied::after {
+            content: "Copied!" !important;
+            color: #43b581 !important;
         }
         p {
             line-height: 1.6;
@@ -93,6 +116,20 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .discord-btn {
+            background-color: #7289da;
+            color: white;
+        }
+        .minecraft-btn {
+            background-color: #43b581;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -117,15 +154,20 @@
         
         <div id="code-section" class="hidden">
             <p>Your verification code is:</p>
-            <div class="code-display" id="verification-code">XXXXX</div>
+            <div class="code-display" id="verification-code" onclick="copyCode()">XXXXX</div>
             
             <div class="instructions">
                 <p><strong>Instructions:</strong></p>
                 <ol>
-                    <li>Go back to Discord</li>
-                    <li>Type <code>/redeem code:XXXXX</code> (replace with your code above)</li>
+                    <li>Your code has been copied to clipboard.</li>
+                    <li>Return to Discord and use <code>/redeem code:XXXXX</code></li>
                     <li>Your rewards will be delivered automatically!</li>
                 </ol>
+            </div>
+            
+            <div class="button-row">
+                <button id="discord-btn" class="btn discord-btn">Open Discord</button>
+                <button id="minecraft-btn" class="btn minecraft-btn">Open Minecraft</button>
             </div>
             
             <p><small>Code expires in 15 minutes. Verification by Shivam9864op</small></p>
@@ -137,6 +179,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const uuid = urlParams.get('uuid');
+        const discordUrl = urlParams.get('discord') || 'https://discord.gg/yourserver';
         
         // Verify parameters exist
         if (!code || !uuid) {
@@ -165,6 +208,60 @@
                 document.querySelectorAll('code').forEach(el => {
                     el.textContent = el.textContent.replace('XXXXX', code);
                 });
+                
+                // Auto copy code to clipboard
+                copyCode();
+                
+                // Set up redirect buttons
+                document.getElementById('discord-btn').addEventListener('click', () => {
+                    // Try direct Discord protocol first, fall back to web
+                    try {
+                        window.location.href = 'discord://discordapp.com/channels/@me';
+                        setTimeout(() => {
+                            window.location.href = discordUrl;
+                        }, 500);
+                    } catch(e) {
+                        window.location.href = discordUrl;
+                    }
+                });
+                
+                document.getElementById('minecraft-btn').addEventListener('click', () => {
+                    // Try Minecraft protocol handler
+                    try {
+                        window.location.href = 'minecraft:';
+                    } catch(e) {
+                        alert('Could not open Minecraft automatically. Please open it manually.');
+                    }
+                });
+            });
+        }
+        
+        // Function to copy code to clipboard
+        function copyCode() {
+            const codeElement = document.getElementById('verification-code');
+            const code = codeElement.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                console.log('Code copied to clipboard');
+                codeElement.classList.add('copied');
+                setTimeout(() => {
+                    codeElement.classList.remove('copied');
+                }, 3000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                
+                // Fallback method for copying
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                codeElement.classList.add('copied');
+                setTimeout(() => {
+                    codeElement.classList.remove('copied');
+                }, 3000);
             });
         }
     </script>
