@@ -76,16 +76,6 @@
             border-radius: 5px;
             margin: 20px 0;
         }
-        .ad-container {
-            margin: 20px 0;
-            min-height: 250px;
-            width: 100%;
-            background-color: #2c2f33;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-        }
         .btn {
             background-color: #7289da;
             color: white;
@@ -137,19 +127,8 @@
         <h1>AdRewards Verification</h1>
         
         <div id="loading">
-            <p>Loading your verification...</p>
+            <p>Loading your verification code...</p>
             <div class="loader"></div>
-        </div>
-        
-        <div id="ad-section" class="hidden">
-            <p>Please watch the ad below to receive your verification code:</p>
-            
-            <div class="ad-container" id="ad-container">
-                <!-- Ad will be inserted here -->
-                <p>Loading ad...</p>
-            </div>
-            
-            <button id="verify-btn" class="btn">I've watched the ad - Show my code</button>
         </div>
         
         <div id="code-section" class="hidden">
@@ -188,18 +167,9 @@
         } else {
             console.log("Valid parameters: code=" + code + ", uuid=" + uuid);
             
-            // Show ad section after brief delay (simulating ad loading)
+            // Show code section after a brief delay
             setTimeout(() => {
                 document.getElementById('loading').classList.add('hidden');
-                document.getElementById('ad-section').classList.remove('hidden');
-                
-                // Insert your actual ad code here
-                // document.getElementById('ad-container').innerHTML = '<!-- Your ad embed code -->';
-            }, 1500);
-            
-            // Set up verification button
-            document.getElementById('verify-btn').addEventListener('click', () => {
-                document.getElementById('ad-section').classList.add('hidden');
                 document.getElementById('code-section').classList.remove('hidden');
                 
                 // Display the code
@@ -233,7 +203,7 @@
                         alert('Could not open Minecraft automatically. Please open it manually.');
                     }
                 });
-            });
+            }, 1500);
         }
         
         // Function to copy code to clipboard
