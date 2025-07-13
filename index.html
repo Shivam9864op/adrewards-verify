@@ -76,36 +76,6 @@
             border-radius: 5px;
             margin: 20px 0;
         }
-        .btn {
-            background-color: #7289da;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-        .btn:hover {
-            background-color: #5b6eae;
-        }
-        .hidden {
-            display: none;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #7289da;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 2s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
         .button-row {
             display: flex;
             justify-content: center;
@@ -115,42 +85,55 @@
         .discord-btn {
             background-color: #7289da;
             color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .discord-btn:hover {
+            background-color: #5b6eae;
         }
         .minecraft-btn {
             background-color: #43b581;
             color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .minecraft-btn:hover {
+            background-color: #3ca374;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="content">
         <h1>AdRewards Verification</h1>
+        <p>Your verification code is:</p>
+        <div class="code-display" id="verification-code" onclick="copyCode()">Loading...</div>
         
-        <div id="loading">
-            <p>Loading your verification code...</p>
-            <div class="loader"></div>
+        <div class="instructions">
+            <p><strong>Instructions:</strong></p>
+            <ol>
+                <li>Your code has been copied to clipboard.</li>
+                <li>Return to Discord and use <code>/redeem code:XXXXX</code></li>
+                <li>Your rewards will be delivered automatically!</li>
+            </ol>
         </div>
         
-        <div id="code-section" class="hidden">
-            <p>Your verification code is:</p>
-            <div class="code-display" id="verification-code" onclick="copyCode()">XXXXX</div>
-            
-            <div class="instructions">
-                <p><strong>Instructions:</strong></p>
-                <ol>
-                    <li>Your code has been copied to clipboard.</li>
-                    <li>Return to Discord and use <code>/redeem code:XXXXX</code></li>
-                    <li>Your rewards will be delivered automatically!</li>
-                </ol>
-            </div>
-            
-            <div class="button-row">
-                <button id="discord-btn" class="btn discord-btn">Open Discord</button>
-                <button id="minecraft-btn" class="btn minecraft-btn">Open Minecraft</button>
-            </div>
-            
-            <p><small>Code expires in 15 minutes. Verification by Shivam9864op</small></p>
+        <div class="button-row">
+            <button id="discord-btn" class="discord-btn">Open Discord</button>
+            <button id="minecraft-btn" class="minecraft-btn">Open Minecraft</button>
         </div>
+        
+        <p><small>Code expires in 15 minutes. Verification by Shivam9864op</small></p>
     </div>
 
     <script>
@@ -160,56 +143,57 @@
         const uuid = urlParams.get('uuid');
         const discordUrl = urlParams.get('discord') || 'https://discord.gg/yourserver';
         
-        // Verify parameters exist
-        if (!code || !uuid) {
-            document.getElementById('loading').innerHTML = 
-                '<p style="color:#ff6b6b">Invalid verification link. Please request a new one.</p>';
-        } else {
+        // Initialize the page on load
+        window.onload = function() {
+            // Verify parameters exist
+            if (!code || !uuid) {
+                document.getElementById('content').innerHTML = 
+                    '<h1>AdRewards Verification</h1>' +
+                    '<p style="color:#ff6b6b">Invalid verification link. Please request a new one.</p>';
+                return;
+            }
+            
             console.log("Valid parameters: code=" + code + ", uuid=" + uuid);
             
-            // Show code section after a brief delay
-            setTimeout(() => {
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('code-section').classList.remove('hidden');
-                
-                // Display the code
-                const codeElement = document.getElementById('verification-code');
-                codeElement.textContent = code;
-                document.querySelectorAll('code').forEach(el => {
-                    el.textContent = el.textContent.replace('XXXXX', code);
-                });
-                
-                // Auto copy code to clipboard
-                copyCode();
-                
-                // Set up redirect buttons
-                document.getElementById('discord-btn').addEventListener('click', () => {
-                    // Try direct Discord protocol first, fall back to web
-                    try {
-                        window.location.href = 'discord://discordapp.com/channels/@me';
-                        setTimeout(() => {
-                            window.location.href = discordUrl;
-                        }, 500);
-                    } catch(e) {
+            // Display the code immediately
+            const codeElement = document.getElementById('verification-code');
+            codeElement.textContent = code;
+            document.querySelectorAll('code').forEach(el => {
+                el.textContent = el.textContent.replace('XXXXX', code);
+            });
+            
+            // Auto copy code to clipboard
+            copyCode();
+            
+            // Set up redirect buttons
+            document.getElementById('discord-btn').addEventListener('click', () => {
+                // Try direct Discord protocol first, fall back to web
+                try {
+                    window.location.href = 'discord://discordapp.com/channels/@me';
+                    setTimeout(() => {
                         window.location.href = discordUrl;
-                    }
-                });
-                
-                document.getElementById('minecraft-btn').addEventListener('click', () => {
-                    // Try Minecraft protocol handler
-                    try {
-                        window.location.href = 'minecraft:';
-                    } catch(e) {
-                        alert('Could not open Minecraft automatically. Please open it manually.');
-                    }
-                });
-            }, 1500);
-        }
+                    }, 500);
+                } catch(e) {
+                    window.location.href = discordUrl;
+                }
+            });
+            
+            document.getElementById('minecraft-btn').addEventListener('click', () => {
+                // Try Minecraft protocol handler
+                try {
+                    window.location.href = 'minecraft:';
+                } catch(e) {
+                    alert('Could not open Minecraft automatically. Please open it manually.');
+                }
+            });
+        };
         
         // Function to copy code to clipboard
         function copyCode() {
             const codeElement = document.getElementById('verification-code');
             const code = codeElement.textContent;
+            
+            if (code === 'Loading...') return;
             
             navigator.clipboard.writeText(code).then(() => {
                 console.log('Code copied to clipboard');
