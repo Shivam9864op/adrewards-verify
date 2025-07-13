@@ -1,139 +1,269 @@
-@@ -0,0 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AdRewards Verification</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdRewards Verification</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #2C2F33;
-            color: white;
-            margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
         }
         .container {
-            background-color: #23272A;
+            background-color: #1e1e1e;
+            border-radius: 10px;
             padding: 30px;
-            border-radius: 8px;
-            max-width: 500px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 90%;
         }
         h1 {
-            color: #7289DA;
+            color: #7289da;
             margin-bottom: 20px;
         }
-        .code {
-            font-size: 28px;
+        .code-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 24px;
             font-weight: bold;
-            background-color: #7289DA;
-            color: white;
-            padding: 10px 20px;
+            background-color: #2c2f33;
+            color: #43b581;
+            padding: 15px;
             border-radius: 5px;
+            letter-spacing: 3px;
             margin: 20px 0;
-            letter-spacing: 2px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .code-display:hover {
+            background-color: #35393e;
+        }
+        .code-display:active {
+            transform: scale(0.98);
+        }
+        .code-display::after {
+            content: "Click to Copy";
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #aaa;
+            opacity: 0.8;
+        }
+        .copied::after {
+            content: "Copied!" !important;
+            color: #43b581 !important;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
         .instructions {
-            margin-bottom: 20px;
-        }
-        .button {
-            display: inline-block;
-            background-color: #43B581;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
+            text-align: left;
+            background-color: #2c2f33;
+            padding: 15px;
             border-radius: 5px;
-            font-weight: bold;
+            margin: 20px 0;
+        }
+        .ad-container {
+            margin: 20px 0;
+            min-height: 250px;
+            width: 100%;
+            background-color: #2c2f33;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+        .btn {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
             margin-top: 20px;
         }
-        .button:hover {
-            background-color: #3ca374;
+        .btn:hover {
+            background-color: #5b6eae;
         }
-        .copy-btn {
-            background-color: #4e545c;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .copy-btn:hover {
-            background-color: #5d646c;
-        }
-        .copied {
-            font-size: 12px;
-            color: #43B581;
+        .hidden {
             display: none;
         }
-        .footer {
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #7289da;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin-top: 20px;
-            font-size: 12px;
-            color: #72767d;
+        }
+        .discord-btn {
+            background-color: #7289da;
+            color: white;
+        }
+        .minecraft-btn {
+            background-color: #43b581;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Verification Successful!</h1>
+        <h1>AdRewards Verification</h1>
         
-        <div class="instructions">
-            Your verification code is:
+        <div id="loading">
+            <p>Loading your verification...</p>
+            <div class="loader"></div>
         </div>
         
-        <div class="code" id="verification-code">LOADING...</div>
-        
-        <button class="copy-btn" onclick="copyCode()">Copy Code</button>
-        <div class="copied" id="copied-message">Copied!</div>
-        
-        <div class="instructions">
-            <p>Type <strong>/redeem <span id="code-command">LOADING</span></strong> in Minecraft to claim your rewards!</p>
-            <p>Or use <strong>/redeem code:<span id="discord-command">LOADING</span></strong> in our Discord server.</p>
+        <div id="ad-section" class="hidden">
+            <p>Please watch the ad below to receive your verification code:</p>
+            
+            <div class="ad-container" id="ad-container">
+                <!-- Ad will be inserted here -->
+                <p>Loading ad...</p>
+            </div>
+            
+            <button id="verify-btn" class="btn">I've watched the ad - Show my code</button>
         </div>
         
-        <a href="https://discord.gg/yourserver" class="button" id="discord-link">Join Our Discord</a>
-        
-        <div class="footer">
-            Created by Shivam9864op • Last updated: 2025-07-12
+        <div id="code-section" class="hidden">
+            <p>Your verification code is:</p>
+            <div class="code-display" id="verification-code" onclick="copyCode()">XXXXX</div>
+            
+            <div class="instructions">
+                <p><strong>Instructions:</strong></p>
+                <ol>
+                    <li>Your code has been copied to clipboard.</li>
+                    <li>Return to Discord and use <code>/redeem code:XXXXX</code></li>
+                    <li>Your rewards will be delivered automatically!</li>
+                </ol>
+            </div>
+            
+            <div class="button-row">
+                <button id="discord-btn" class="btn discord-btn">Open Discord</button>
+                <button id="minecraft-btn" class="btn minecraft-btn">Open Minecraft</button>
+            </div>
+            
+            <p><small>Code expires in 15 minutes. Verification by Shivam9864op</small></p>
         </div>
     </div>
-    
+
     <script>
-        // Function to copy code to clipboard
-        function copyCode() {
-            const code = document.getElementById('verification-code').innerText;
-            navigator.clipboard.writeText(code).then(function() {
-                const copiedMsg = document.getElementById('copied-message');
-                copiedMsg.style.display = 'block';
-                setTimeout(() => {
-                    copiedMsg.style.display = 'none';
-                }, 2000);
+        // Extract parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const uuid = urlParams.get('uuid');
+        const discordUrl = urlParams.get('discord') || 'https://discord.gg/yourserver';
+        
+        // Verify parameters exist
+        if (!code || !uuid) {
+            document.getElementById('loading').innerHTML = 
+                '<p style="color:#ff6b6b">Invalid verification link. Please request a new one.</p>';
+        } else {
+            console.log("Valid parameters: code=" + code + ", uuid=" + uuid);
+            
+            // Show ad section after brief delay (simulating ad loading)
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('ad-section').classList.remove('hidden');
+                
+                // Insert your actual ad code here
+                // document.getElementById('ad-container').innerHTML = '<!-- Your ad embed code -->';
+            }, 1500);
+            
+            // Set up verification button
+            document.getElementById('verify-btn').addEventListener('click', () => {
+                document.getElementById('ad-section').classList.add('hidden');
+                document.getElementById('code-section').classList.remove('hidden');
+                
+                // Display the code
+                const codeElement = document.getElementById('verification-code');
+                codeElement.textContent = code;
+                document.querySelectorAll('code').forEach(el => {
+                    el.textContent = el.textContent.replace('XXXXX', code);
+                });
+                
+                // Auto copy code to clipboard
+                copyCode();
+                
+                // Set up redirect buttons
+                document.getElementById('discord-btn').addEventListener('click', () => {
+                    // Try direct Discord protocol first, fall back to web
+                    try {
+                        window.location.href = 'discord://discordapp.com/channels/@me';
+                        setTimeout(() => {
+                            window.location.href = discordUrl;
+                        }, 500);
+                    } catch(e) {
+                        window.location.href = discordUrl;
+                    }
+                });
+                
+                document.getElementById('minecraft-btn').addEventListener('click', () => {
+                    // Try Minecraft protocol handler
+                    try {
+                        window.location.href = 'minecraft:';
+                    } catch(e) {
+                        alert('Could not open Minecraft automatically. Please open it manually.');
+                    }
+                });
             });
         }
         
-        // Parse URL parameters
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const discord = urlParams.get('discord');
+        // Function to copy code to clipboard
+        function copyCode() {
+            const codeElement = document.getElementById('verification-code');
+            const code = codeElement.textContent;
             
-            if (code) {
-                document.getElementById('verification-code').innerText = code;
-                document.getElementById('code-command').innerText = code;
-                document.getElementById('discord-command').innerText = code;
-            }
-            
-            if (discord) {
-                document.getElementById('discord-link').href = discord;
-            }
-        };
+            navigator.clipboard.writeText(code).then(() => {
+                console.log('Code copied to clipboard');
+                codeElement.classList.add('copied');
+                setTimeout(() => {
+                    codeElement.classList.remove('copied');
+                }, 3000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                
+                // Fallback method for copying
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                codeElement.classList.add('copied');
+                setTimeout(() => {
+                    codeElement.classList.remove('copied');
+                }, 3000);
+            });
+        }
     </script>
 </body>
 </html>
